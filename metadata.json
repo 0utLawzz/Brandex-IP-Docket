@@ -1,0 +1,6 @@
+{
+  "name": "Brandex IP Docket - Law Firm Workflow & Filing Tracker",
+  "description": "Smart IP filing workflow, WhatsApp instruction importer, statutory deadline tracker, and automated office action reminders for Brandex Law Association.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

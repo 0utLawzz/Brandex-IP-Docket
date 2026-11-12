@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@layer base {
+  :root,
+  [data-theme="chancery"] {
+    --theme-header-bg: #0b192c;
+    --theme-header-border: #1e293b;
+    --theme-accent: #d97706;
+    --theme-accent-hover: #b45309;
+    --theme-accent-fg: #0f172a;
+    --theme-accent-soft: #fffbeb;
+    --theme-accent-border: #fde68a;
+    --theme-active-border: #f59e0b;
+    --theme-crest: #f59e0b;
+    --theme-canvas: #f8fafc;
+  }
+
+  [data-theme="tech"] {
+    --theme-header-bg: #090d16;
+    --theme-header-border: #1e293b;
+    --theme-accent: #059669;
+    --theme-accent-hover: #047857;
+    --theme-accent-fg: #ffffff;
+    --theme-accent-soft: #ecfdf5;
+    --theme-accent-border: #a7f3d0;
+    --theme-active-border: #10b981;
+    --theme-crest: #10b981;
+    --theme-canvas: #f1f5f9;
+  }
+
+  [data-theme="oxblood"] {
+    --theme-header-bg: #2d070e;
+    --theme-header-border: #4a0d17;
+    --theme-accent: #c29b38;
+    --theme-accent-hover: #a17f2a;
+    --theme-accent-fg: #1c0407;
+    --theme-accent-soft: #fbf5e8;
+    --theme-accent-border: #eedeb5;
+    --theme-active-border: #d4af37;
+    --theme-crest: #d4af37;
+    --theme-canvas: #faf8f5;
+  }
+
+  [data-theme="cobalt"] {
+    --theme-header-bg: #11235a;
+    --theme-header-border: #1e3a8a;
+    --theme-accent: #2563eb;
+    --theme-accent-hover: #1d4ed8;
+    --theme-accent-fg: #ffffff;
+    --theme-accent-soft: #eff6ff;
+    --theme-accent-border: #bfdbfe;
+    --theme-active-border: #3b82f6;
+    --theme-crest: #60a5fa;
+    --theme-canvas: #f8f9fa;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--theme-canvas);
+    transition: background-color 0.2s ease;
+  }
+  
+  .font-mono, .tabular-nums {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom scrollbars for Kanban boards and dense docket tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}

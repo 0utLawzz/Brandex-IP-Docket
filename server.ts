@@ -7,7 +7,8 @@ import { GoogleGenAI, Type } from '@google/genai';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// AI Studio dev server strictly runs on port 3000
+const PORT = 3000;
 const isProd = process.env.NODE_ENV === 'production';
 
 app.use(express.json({ limit: '10mb' }));
@@ -325,6 +326,7 @@ async function startServer() {
       server: {
         middlewareMode: true,
         host: '0.0.0.0',
+        hmr: process.env.DISABLE_HMR === 'true' ? false : undefined,
       },
       appType: 'spa',
     });

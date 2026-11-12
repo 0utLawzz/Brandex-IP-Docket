@@ -13,6 +13,7 @@ import { EmailNoticeModal } from './components/EmailNoticeModal';
 import { FilingDetailModal } from './components/FilingDetailModal';
 import { NewFilingModal } from './components/NewFilingModal';
 import { ThemeSelectorModal } from './components/ThemeSelectorModal';
+import { ThemeShowcaseBanner } from './components/ThemeShowcaseBanner';
 import { getDaysRemaining } from './utils/dateUtils';
 import confetti from 'canvas-confetti';
 
@@ -74,6 +75,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'kanban' | 'docket' | 'whatsapp' | 'deadlines' | 'profile'>('kanban');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterCompletedOnly, setFilterCompletedOnly] = useState(false);
+  const [globalSearchQuery, setGlobalSearchQuery] = useState('');
 
   // Theme vibe state (persisted to localStorage)
   const [currentTheme, setCurrentTheme] = useState<ThemeVibe>(() => {
@@ -199,8 +201,22 @@ export default function App() {
     setIsNewFilingModalOpen(true);
   };
 
+  // Filter filings across all views by applicant name, file reference number, or title
+  const globallyFilteredFilings = filings.filter((f) => {
+    if (!globalSearchQuery.trim()) return true;
+    const q = globalSearchQuery.toLowerCase().trim();
+    return (
+      f.client.toLowerCase().includes(q) ||
+      f.appNumber.toLowerCase().includes(q) ||
+      f.title.toLowerCase().includes(q) ||
+      f.taskType.toLowerCase().includes(q) ||
+      f.niceClass.toLowerCase().includes(q) ||
+      f.jurisdiction.toLowerCase().includes(q)
+    );
+  });
+
   // Filtered filings for Kanban
-  const visibleFilings = filings.filter((f) => {
+  const visibleFilings = globallyFilteredFilings.filter((f) => {
     if (filterUrgentOnly) {
       return !f.completed && getDaysRemaining(f.dueDate) <= 3;
     }
@@ -214,7 +230,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 font-sans">
-      {/* Top Bar Header */}
+      {/* Top Bar Header with Global Search */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -226,11 +242,23 @@ export default function App() {
         urgentCount={urgentCount}
         currentTheme={currentTheme}
         onOpenThemeModal={() => setIsThemeModalOpen(true)}
+        searchQuery={globalSearchQuery}
+        onSearchChange={setGlobalSearchQuery}
+        matchingCount={globalSearchQuery.trim() ? globallyFilteredFilings.length : undefined}
+      />
+
+      {/* 4 Curated Design Vibes Visualizer Showcase */}
+      <ThemeShowcaseBanner
+        currentTheme={currentTheme}
+        onSelectTheme={(t) => {
+          setCurrentTheme(t);
+          showToast(`Applied ${t.toUpperCase()} theme vibe!`);
+        }}
       />
 
       {/* KPI Stats & Quick Action Strip */}
       <StatsBanner
-        filings={filings}
+        filings={globallyFilteredFilings}
         onGenerateBossReport={() => setIsBossReportModalOpen(true)}
         onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
         filterUrgentOnly={filterUrgentOnly}
@@ -241,6 +269,24 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Global Search Active Banner */}
+        {globalSearchQuery.trim() && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs flex items-center justify-between text-blue-900 shadow-2xs">
+            <div className="flex items-center gap-2">
+              <span className="font-bold">Global Search Active:</span>
+              <span>
+                Showing <strong className="font-mono font-bold text-blue-950">{globallyFilteredFilings.length}</strong> matter{globallyFilteredFilings.length === 1 ? '' : 's'} matching "{globalSearchQuery}" (searched applicant name & file ref # across all views)
+              </span>
+            </div>
+            <button
+              onClick={() => setGlobalSearchQuery('')}
+              className="text-blue-700 hover:text-blue-900 font-semibold underline text-xs"
+            >
+              Clear Search
+            </button>
+          </div>
+        )}
+
         {/* Active Filter Bar if active */}
         {(filterUrgentOnly || filterCompletedOnly) && (
           <div className="mb-4 p-2.5 bg-amber-50 border border-amber-200 rounded text-xs flex items-center justify-between text-amber-900">
@@ -303,7 +349,7 @@ export default function App() {
               </p>
             </div>
             <DocketTableView
-              filings={filings}
+              filings={globallyFilteredFilings}
               onToggleComplete={handleToggleComplete}
               onOpenDetail={(filing) => setSelectedDetailFiling(filing)}
               onOpenEmailNotice={(filing) => setSelectedEmailFiling(filing)}
@@ -315,7 +361,7 @@ export default function App() {
 
         {activeTab === 'deadlines' && (
           <DeadlinesRemindersView
-            filings={filings}
+            filings={globallyFilteredFilings}
             onOpenEmailNotice={(filing) => setSelectedEmailFiling(filing)}
             onToggleComplete={handleToggleComplete}
             onOpenDetail={(filing) => setSelectedDetailFiling(filing)}

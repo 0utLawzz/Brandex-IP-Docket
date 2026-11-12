@@ -84,27 +84,80 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
       });
   }, [filings, searchTerm, selectedIpType, statusFilter, sortBy, sortOrder]);
 
+  const [csvDownloaded, setCsvDownloaded] = useState(false);
+
   const exportCSV = () => {
-    const headers = ['App Number', 'Title', 'Client', 'IP Type', 'Class', 'Task', 'Due Date', 'Status', 'Jurisdiction'];
-    const rows = filteredFilings.map((f) => [
-      `"${f.appNumber}"`,
-      `"${f.title}"`,
-      `"${f.client}"`,
-      `"${f.ipType}"`,
-      `"${f.niceClass}"`,
-      `"${f.taskType}"`,
-      `"${f.dueDate}"`,
-      `"${f.completed ? 'Completed' : 'Pending'}"`,
-      `"${f.jurisdiction}"`,
-    ]);
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const headers = [
+      'Application Reference',
+      'Matter / Mark Title',
+      'Client / Applicant Name',
+      'IP Category',
+      'Nice / IPC Classification',
+      'Statutory Milestone / Task',
+      'Workflow Stage',
+      'Statutory Due Date',
+      'Status',
+      'Days Remaining',
+      'Forum / Registry Jurisdiction',
+      'Priority Urgency',
+      'Statutory Reference',
+      'Assigned Counsel',
+      'Reminders Dispatched',
+      'Client Email',
+      'Docket Notes & Brief',
+    ];
+
+    const escapeCSV = (val: any) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = filteredFilings.map((f) => {
+      const days = getDaysRemaining(f.dueDate);
+      const statusText = f.completed
+        ? 'Completed & Filed'
+        : days < 0
+        ? `Overdue (${Math.abs(days)} days)`
+        : days === 0
+        ? 'Due Today'
+        : `Pending (${days} days left)`;
+
+      return [
+        escapeCSV(f.appNumber),
+        escapeCSV(f.title),
+        escapeCSV(f.client),
+        escapeCSV(f.ipType),
+        escapeCSV(f.niceClass),
+        escapeCSV(f.taskType),
+        escapeCSV(f.stage),
+        escapeCSV(f.dueDate),
+        escapeCSV(statusText),
+        escapeCSV(days),
+        escapeCSV(f.jurisdiction),
+        escapeCSV(f.priority.toUpperCase()),
+        escapeCSV(f.statutoryRef || 'Trade Marks Ordinance 2001'),
+        escapeCSV(f.assignedLawyer),
+        escapeCSV(f.remindersSent || 0),
+        escapeCSV(f.clientEmail || 'docket@brandex.pk'),
+        escapeCSV(f.notes || ''),
+      ].join(',');
+    });
+
+    // Prepend UTF-8 BOM (\uFEFF) for Microsoft Excel compatibility
+    const csvContent = '\uFEFF' + [headers.map(escapeCSV).join(','), ...rows].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Brandex_Law_IP_Docket_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Brandex_Law_IP_Docket_Archive_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setCsvDownloaded(true);
+    setTimeout(() => setCsvDownloaded(false), 3000);
   };
 
   return (
@@ -180,14 +233,18 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
             </button>
           </div>
 
-          {/* CSV Export */}
+          {/* CSV Export Button */}
           <button
             onClick={exportCSV}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded transition-colors"
-            title="Export filtered records to spreadsheet"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded transition-all whitespace-nowrap shadow-xs ${
+              csvDownloaded
+                ? 'bg-emerald-600 text-white ring-2 ring-emerald-400'
+                : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300'
+            }`}
+            title="Download filing records as a CSV archive for external reporting or archive purposes"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
+            <span>{csvDownloaded ? 'Exported CSV!' : `Export to CSV (${filteredFilings.length})`}</span>
           </button>
         </div>
       </div>
@@ -357,13 +414,23 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
         </div>
 
         {/* Table Footer Summary */}
-        <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+        <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             Showing <span className="font-mono font-semibold">{filteredFilings.length}</span> of{' '}
             <span className="font-mono font-semibold">{filings.length}</span> total matters in Brandex Law docket
           </div>
-          <div className="text-[11px] text-slate-400">
-            Click any row to open filing particulars, statutory forms, and lawyer notes
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-slate-400 hidden md:inline">
+              Click any row to open filing particulars, statutory forms, and lawyer notes
+            </span>
+            <button
+              onClick={exportCSV}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded transition-colors"
+              title="Download filing records as a CSV archive"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export to CSV</span>
+            </button>
           </div>
         </div>
       </div>

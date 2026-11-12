@@ -14,12 +14,12 @@
 
 - **Firm**: **Brandex Law Association** (Advocates, Trade Marks, Patents, Designs & Copyright Attorneys)
 - **Official Website**: [https://brandex.pk](https://brandex.pk)
-- **Established**: 1998
-- **Core Practice**: Trade Marks Registration & Litigation, Patent Prosecution, Copyright Protection, Industrial Designs, Anti-Counterfeiting, Customs Recordals, and Hearings before the Intellectual Property Organization of Pakistan (IPO-Pakistan).
+- **Established**: 2004 (Over Two Decades of IP & Corporate Legal Solutions)
+- **Core Practice**: Trade Marks (TM-1, TM-11, TM-12, TM-13, TM-16, TM-55), Patent Complete Specifications (Form 2), Copyright Software & Literary Registrations, Industrial Designs (Form ID-1), DRAP Product Clearances, SECP Corporate Registrations, FBR NTN, Anti-Counterfeiting Raids, Customs Border Recordals, and Hearings before the Intellectual Property Organization of Pakistan (IPO-Pakistan).
 - **Offices**:
   - **Lahore (Head Office)**: Suites 402–404, Trade Centre, 1-Turner Road, High Court Precinct, Lahore, Pakistan.
-  - **Karachi Office**: Plot 12-C, 7th Commercial Street, Phase II Ext, DHA, Karachi, Pakistan *(Near IPO Karachi Registry)*.
-  - **Islamabad Office**: Office 201, Evacuee Trust Complex, Sector F-5/1, Islamabad, Pakistan *(Liaison Desk)*.
+  - **Karachi Office**: Plot 12-C, 7th Commercial Street, Phase II Ext, DHA, Karachi, Pakistan *(Near IPO Karachi Registry & Customs Desk)*.
+  - **Islamabad Office**: Office 201, Evacuee Trust Complex, Sector F-5/1, Islamabad, Pakistan *(Federal Liaison & Appellate Desk)*.
 
 ---
 
@@ -38,46 +38,41 @@ Brandex IP Docket features an interactive **Theme Switcher** accessible from the
 
 ## ⚡ Core Features
 
-### 1. WhatsApp Chat & Voice-Note Importer (No Coding Required)
-- **Paste & Auto-Docket**: Paste unstructured boss messages (e.g. `"[10:15 AM] Ali, urgent! TM-11 reply for VERTEX GLOW (App 614920) Alpha Foods is due by 10th Nov..."`).
-- **AI-Powered Extraction**: Integrates **Gemini 3.8 Flash** with a local regex rule-based fallback to extract:
-  - Client / Applicant Name
-  - Trademark / Invention / Work Title
-  - Official Application Number (e.g., `TM-614920`, `P-2025/1102`)
-  - Nice Classification (e.g., `Class 5`, `Class 30`, `Class 9`)
-  - Task / Office Action Type (TM-1, TM-11, TM-12, TM-16, Hearing)
-  - Calculated Statutory Due Date (resolves relative terms like `"due within 15 days"`, `"before next Friday"`)
-  - Urgency & Boss's original notes
-- **One-Click Pre-Loaded Test Chats**: Test scenarios ready for instant one-click demonstration.
-- **Editable Preview**: Review and adjust extracted matter particulars before batch-importing.
+### 1. Manual Message Selector & Direct Docketing
+- **Pick Any Incoming Message**: Browse discrete incoming WhatsApp messages from the Managing Partner or paste ANY custom message in real-time.
+- **Smart Field Auto-Extraction**: Automatically extracts and populates Mark Title, Client Name, Application Reference, Nice Class, IP Category, Registry, and Procedural Stage.
+- **Instant Docketing**: Adjust statutory deadlines with 1-click offsets (+3d, +7d, +14d, +30d for TM-11, +60d for Oppositions) and click **"Add Selected Message to Docket"** with zero friction.
+- **Multi-Message Batch Parser**: Upload `.txt` chat logs or paste long multi-message transcripts for batch ingestion powered by **Gemini 3.8 Flash**.
 
-### 2. Drag-and-Drop Statutory Filing Pipeline (Kanban Board)
+### 2. Interactive IP Analytics Dashboard (Recharts)
+- **Filing Distribution by Registry / Jurisdiction**: Visualizes matter volume across IPO Pakistan Karachi Registry, Lahore Registry, Islamabad Desk, Patent Office, and Designs Office.
+- **Filing Distribution by Nice Class & Classification**: Horizontal bar chart highlighting concentration in key Nice classes (e.g. Class 30 Foodstuffs, Class 5 Pharmaceuticals, Class 9 Electronics, Class 35 Advertising, IPC Agri-Tech).
+- **IP Category Portfolio Share**: Donut chart breaking down Trademarks, Patents, Industrial Designs, and Copyrights.
+- **Procedural Stage Lifecycle Funnel**: Visualizes matters progressing across New Instruction, Drafting, Office Actions, Hearings, and Final Registrations.
+- **Critical <48h Deadline Watchlist**: Real-time highlight of imminent statutory expirations.
+
+### 3. Automated Web Notifications API (48-Hour Deadline Alerts)
+- **Native Browser Notifications**: Toggles the Web Notifications API (`Notification.requestPermission()`) in the Firm Profile view.
+- **Automated <48-Hour Alerts**: Periodically monitors active matters and triggers instant OS/browser desktop alerts for any filing due within 48 hours.
+- **Interactive Test Button**: Allows attorneys to send an instant test notification to verify OS-level notification delivery.
+
+### 4. Drag-and-Drop Statutory Filing Pipeline (Kanban Board)
 - **5 Statutory Pipeline Stages**:
   1. `New Instruction`: Fresh client briefs, searches & clearance reports.
   2. `Drafting & Prep`: TM-1 forms, patent complete specifications, notarized Form TM-48 (Power of Attorney).
   3. `Office Action / Objection`: Examiner reports, Section 14 citations, disclaimer letters.
   4. `Hearing & Opposition`: Notice of opposition (TM-12), counter-statements (TM-13), registrar appearances.
   5. `Completed / Registered`: Certificate issued, registration recorded, courier dispatched.
-- **Visual Drag & Drop**: Native HTML5 smooth dragging across columns with real-time stage updates and confetti celebration upon marking filings complete.
+- **Visual Drag & Drop**: Native smooth dragging across columns with real-time stage updates and confetti celebration upon marking filings complete.
 - **Checklist Subtasks**: Track procedural milestones per filing (e.g., fee challans paid, drawing representations verified).
 
-### 3. 1-Click Boss WhatsApp Status Report Generator
-- Gathers all completed filings today, urgent office action deadlines (<5 days), and upcoming registrar hearings.
-- Formats a clean, professional status summary with WhatsApp bolding (`*text*`) and emojis.
-- Direct **Copy for WhatsApp** and **Open in WhatsApp Web** buttons to message the Managing Partner instantly.
+### 5. Global Search Across All Views
+- Search by **Applicant Name** (e.g., *Alpha Foods*, *Swiftex*), **Application Reference Number** (e.g., *614920*), or **Mark Title** in the top navigation bar.
+- Filters matters instantly across Pipeline, Docket Sheet, Deadlines, and Dashboard.
 
-### 4. Automated Reminders & Statutory Deadline Center
-- **Automated Rules Engine**:
-  - 14-Day Advance Notice (Document Gathering)
-  - 7-Day Drafting Warning (Review & Signatures)
-  - 3-Day Urgent Notice (Challan & Submission)
-  - 24-Hour Statutory Cutoff Alert
-- **Statutory Client Email Drafter**: Automatically composes formal legal notice letters citing the *Trade Marks Ordinance 2001* and *Patent Ordinance 2000*, ready to edit, print, or dispatch with tracking IDs.
-
-### 5. High-Density Docket Sheet & CSV Export
-- Search across marks, clients, application references, classes, and tasks.
-- Filter by IP category (Trademark, Patent, Copyright, Industrial Design) and Status (Pending, Urgent, Completed).
-- 1-Click **Export to CSV** for spreadsheets and reporting.
+### 6. High-Density Docket Sheet & UTF-8 CSV Export
+- Complete audit ledger of all Trademarks, Patents, Designs, and Copyrights.
+- 1-Click **Export to CSV** with UTF-8 BOM encoding for seamless opening in Microsoft Excel and external audit reporting.
 
 ---
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Scale, MessageSquareCode, Plus, Palette, Search, X } from 'lucide-react';
-import { ThemeVibe } from '../types';
+import { NavigationTab, ThemeVibe } from '../types';
 import { THEME_VIBES } from '../data/seedData';
 
 interface HeaderProps {
-  activeTab: 'kanban' | 'docket' | 'whatsapp' | 'deadlines' | 'profile';
-  setActiveTab: (tab: 'kanban' | 'docket' | 'whatsapp' | 'deadlines' | 'profile') => void;
+  activeTab: NavigationTab;
+  setActiveTab: (tab: NavigationTab) => void;
   onOpenNewFiling: () => void;
   onOpenWhatsAppModal: () => void;
   urgentCount: number;
@@ -91,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Zone 2: Concise Nav Links */}
+          {/* Zone 2: Nav Links including Dashboard */}
           <nav className="hidden lg:flex items-center gap-5 text-xs sm:text-sm font-medium text-slate-300 shrink-0">
             <button
               onClick={() => setActiveTab('kanban')}
@@ -110,6 +110,15 @@ export const Header: React.FC<HeaderProps> = ({
               style={activeTab === 'docket' ? { color: 'var(--theme-crest)', borderColor: 'var(--theme-crest)' } : {}}
             >
               Docket Sheet
+            </button>
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 flex items-center gap-1.5 ${
+                activeTab === 'dashboard' ? 'border-b-2 font-semibold' : ''
+              }`}
+              style={activeTab === 'dashboard' ? { color: 'var(--theme-crest)', borderColor: 'var(--theme-crest)' } : {}}
+            >
+              <span>Dashboard</span>
             </button>
             <button
               onClick={() => setActiveTab('whatsapp')}

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { FilingItem, FilingStage, ThemeVibe } from './types';
+import { FilingItem, FilingStage, NavigationTab, ThemeVibe } from './types';
 import { INITIAL_FILINGS } from './data/seedData';
 import { Header } from './components/Header';
 import { StatsBanner } from './components/StatsBanner';
 import { KanbanBoard } from './components/KanbanBoard';
 import { DocketTableView } from './components/DocketTableView';
+import { AnalyticsDashboardView } from './components/AnalyticsDashboardView';
 import { DeadlinesRemindersView } from './components/DeadlinesRemindersView';
 import { FirmProfileView } from './components/FirmProfileView';
 import { WhatsAppImporterModal } from './components/WhatsAppImporterModal';
@@ -72,7 +73,7 @@ export default function App() {
     return sanitizeAndDeduplicateFilings(INITIAL_FILINGS);
   });
 
-  const [activeTab, setActiveTab] = useState<'kanban' | 'docket' | 'whatsapp' | 'deadlines' | 'profile'>('kanban');
+  const [activeTab, setActiveTab] = useState<NavigationTab>('kanban');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [filterCompletedOnly, setFilterCompletedOnly] = useState(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
@@ -359,6 +360,13 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === 'dashboard' && (
+          <AnalyticsDashboardView
+            filings={globallyFilteredFilings}
+            onOpenDetail={(filing) => setSelectedDetailFiling(filing)}
+          />
+        )}
+
         {activeTab === 'deadlines' && (
           <DeadlinesRemindersView
             filings={globallyFilteredFilings}
@@ -368,7 +376,12 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'profile' && <FirmProfileView />}
+        {activeTab === 'profile' && (
+          <FirmProfileView
+            filings={globallyFilteredFilings}
+            onOpenDetail={(filing) => setSelectedDetailFiling(filing)}
+          />
+        )}
       </main>
 
       {/* Modals */}

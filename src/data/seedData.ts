@@ -232,25 +232,61 @@ export const DEFAULT_REMINDER_RULES: ReminderRule[] = [
 export const FIRM_DETAILS = {
   name: 'Brandex Law Association',
   domain: 'brandex.pk',
-  tagline: 'Advocates, Trademark & Patent Attorneys',
-  established: '1998',
+  legalName: 'Brandex Law Association & Intellectual Property Consultants',
+  tagline: 'Premier Intellectual Property, Patent & Corporate Law Attorneys',
+  established: '2004',
+  experience: 'Over Two Decades of Premier IP & Corporate Legal Solutions in Pakistan',
   email: 'info@brandex.pk',
   docketEmail: 'docket@brandex.pk',
-  phone: '+92 42 3724 8891 / +92 21 3583 2210',
+  phone: '+92 42 3724 8891 / +92 42 3735 9912',
+  directCounselPhone: '+92 21 3583 2210',
   whatsappHotline: '+92 300 8452911',
+  workingHours: 'Monday – Friday: 09:00 AM – 06:00 PM PKT (Court & IPO Working Days)',
   offices: [
-    { city: 'Lahore (Head Office)', address: 'Suites 402-404, Trade Centre, 1-Turner Road, High Court Precinct, Lahore, Pakistan' },
-    { city: 'Karachi Office', address: 'Plot 12-C, 7th Commercial Street, Phase II Ext, DHA, Karachi, Pakistan (Near IPO Karachi)' },
-    { city: 'Islamabad Office', address: 'Office 201, Evacuee Trust Complex, Sector F-5/1, Islamabad, Pakistan' }
+    {
+      city: 'Lahore (Head Office)',
+      address: 'Suites 402-404, Trade Centre, 1-Turner Road, High Court Precinct, Lahore 54000, Pakistan',
+      role: 'Principal Litigation Chambers & Trade Marks Prosecution Division',
+      phone: '+92 42 3724 8891'
+    },
+    {
+      city: 'Karachi Office',
+      address: 'Plot 12-C, 7th Commercial Street, Phase II Extension, DHA, Karachi, Pakistan',
+      role: 'Trade Marks Registry (TMR Karachi) Liaison & Port Customs Enforcement',
+      phone: '+92 21 3583 2210'
+    },
+    {
+      city: 'Islamabad Office',
+      address: 'Office 201, Evacuee Trust Complex, Sector F-5/1, Islamabad, Pakistan',
+      role: 'IPO Pakistan Headquarters Liaison & Federal Appellate Division',
+      phone: '+92 51 2825 440'
+    }
   ],
   services: [
-    'Trade Marks Registration & Litigation',
-    'Patent Prosecution & Specification Drafting',
-    'Copyright Registration & Software Protection',
-    'Industrial Designs Registration',
-    'IPO Pakistan Hearings & Oppositions',
-    'WIPO Madrid System & PCT Applications',
-    'Customs IP Border Enforcement & Anti-Counterfeiting'
+    'Trademark Pre-Filing Availability Search (Form TM-55)',
+    'Trademark Application Filing & Prosecution (Form TM-1)',
+    'Office Action & Examiner Report Response (Form TM-11)',
+    'Trademark Opposition & Hearing Representation (Form TM-12 & TM-13)',
+    '10-Year Trademark Renewals & Restorations (Form TM-16)',
+    'Patent Complete Specification Drafting & Prior Art Searches',
+    'Copyright Registration for Software Code & Literary Works (Form 1)',
+    'Industrial Designs Registration (Packaging & Fabric Motifs, Form ID-1)',
+    'Drug Regulatory Authority of Pakistan (DRAP) Product Approvals',
+    'SECP Corporate Company Incorporation & FBR NTN Tax Registrations',
+    'Customs IP Border Enforcement & Anti-Counterfeiting Raids',
+    'PKNIC & WIPO Domain Name Dispute Arbitrations'
+  ],
+  leadership: [
+    {
+      name: 'M. Ali Raza, Advocate High Court',
+      title: 'Partner — Intellectual Property Prosecution & Docketing',
+      specialty: 'Trade Marks, Patents, Section 14 Hearings & Registry Practice'
+    },
+    {
+      name: 'Senior Counsel, Advocate Supreme Court of Pakistan',
+      title: 'Managing Partner — IP Litigation & Appellate Chambers',
+      specialty: 'High Court Writs, Trademark Injunctions & Commercial Arbitration'
+    }
   ]
 };
 

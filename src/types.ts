@@ -9,6 +9,8 @@ export type FilingStage =
 
 export type PriorityLevel = 'urgent' | 'high' | 'normal';
 
+export type NavigationTab = 'kanban' | 'docket' | 'dashboard' | 'whatsapp' | 'deadlines' | 'profile';
+
 export type ThemeVibe = 'chancery' | 'tech' | 'oxblood' | 'cobalt';
 
 export interface ThemeConfig {

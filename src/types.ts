@@ -29,6 +29,13 @@ export interface Subtask {
   completed: boolean;
 }
 
+export interface InternalComment {
+  id: string;
+  text: string;
+  author: string;
+  timestamp: string;
+}
+
 export interface FilingItem {
   id: string;
   title: string; // Mark name or Invention title
@@ -44,6 +51,7 @@ export interface FilingItem {
   completed: boolean;
   completedAt?: string;
   notes: string;
+  internalComments?: InternalComment[];
   statutoryRef?: string; // e.g. "Section 14(2) Trade Marks Ordinance 2001"
   assignedLawyer: string;
   source: 'whatsapp' | 'manual';

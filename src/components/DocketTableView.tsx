@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FilingItem, IPType, PriorityLevel } from '../types';
 import { formatDueDateBadge, formatDatePretty, getDaysRemaining } from '../utils/dateUtils';
 import confetti from 'canvas-confetti';
@@ -12,6 +12,7 @@ import {
   Copy,
   ChevronRight,
   SlidersHorizontal,
+  StickyNote,
 } from 'lucide-react';
 
 interface DocketTableViewProps {
@@ -38,6 +39,16 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
   );
   const [sortBy, setSortBy] = useState<'dueDate' | 'title' | 'client' | 'priority'>('dueDate');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  useEffect(() => {
+    if (filterUrgentOnly) {
+      setStatusFilter('urgent');
+    } else if (filterCompletedOnly) {
+      setStatusFilter('completed');
+    } else {
+      setStatusFilter('all');
+    }
+  }, [filterUrgentOnly, filterCompletedOnly]);
 
   // Filtered and sorted filings
   const filteredFilings = useMemo(() => {
@@ -87,6 +98,8 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
   const [csvDownloaded, setCsvDownloaded] = useState(false);
 
   const exportCSV = () => {
+    if (filteredFilings.length === 0) return;
+
     const headers = [
       'Application Reference',
       'Matter / Mark Title',
@@ -105,6 +118,7 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
       'Reminders Dispatched',
       'Client Email',
       'Docket Notes & Brief',
+      'Internal Attorney Comments',
     ];
 
     const escapeCSV = (val: any) => {
@@ -122,6 +136,10 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
         : days === 0
         ? 'Due Today'
         : `Pending (${days} days left)`;
+
+      const commentsSummary = (f.internalComments || [])
+        .map((c) => `[${c.timestamp}] ${c.author}: ${c.text}`)
+        .join(' | ');
 
       return [
         escapeCSV(f.appNumber),
@@ -141,6 +159,7 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
         escapeCSV(f.remindersSent || 0),
         escapeCSV(f.clientEmail || 'docket@brandex.pk'),
         escapeCSV(f.notes || ''),
+        escapeCSV(commentsSummary),
       ].join(',');
     });
 
@@ -236,12 +255,13 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
           {/* CSV Export Button */}
           <button
             onClick={exportCSV}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded transition-all whitespace-nowrap shadow-xs ${
+            disabled={filteredFilings.length === 0}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded transition-all whitespace-nowrap shadow-xs disabled:opacity-40 disabled:cursor-not-allowed ${
               csvDownloaded
                 ? 'bg-emerald-600 text-white ring-2 ring-emerald-400'
                 : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300'
             }`}
-            title="Download filing records as a CSV archive for external reporting or archive purposes"
+            title="Download the currently filtered filing records as a formatted CSV file"
           >
             <Download className="w-3.5 h-3.5" />
             <span>{csvDownloaded ? 'Exported CSV!' : `Export to CSV (${filteredFilings.length})`}</span>
@@ -324,12 +344,23 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
 
                     {/* Title */}
                     <td className="py-2.5 px-3">
-                      <div
-                        className={`font-bold text-slate-900 group-hover:text-amber-700 transition-colors ${
-                          filing.completed ? 'line-through text-slate-400' : ''
-                        }`}
-                      >
-                        {filing.title}
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className={`font-bold text-slate-900 group-hover:text-amber-700 transition-colors ${
+                            filing.completed ? 'line-through text-slate-400' : ''
+                          }`}
+                        >
+                          {filing.title}
+                        </div>
+                        {(filing.internalComments?.length || 0) > 0 && (
+                          <span
+                            className="inline-flex items-center gap-0.5 px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded text-[10px] font-mono font-semibold"
+                            title={`${filing.internalComments?.length} internal attorney note(s)`}
+                          >
+                            <StickyNote className="w-2.5 h-2.5" />
+                            <span>{filing.internalComments?.length}</span>
+                          </span>
+                        )}
                       </div>
                       <div className="text-[11px] text-slate-500 truncate max-w-xs">{filing.jurisdiction}</div>
                     </td>
@@ -425,8 +456,9 @@ export const DocketTableView: React.FC<DocketTableViewProps> = ({
             </span>
             <button
               onClick={exportCSV}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded transition-colors"
-              title="Download filing records as a CSV archive"
+              disabled={filteredFilings.length === 0}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              title="Download the currently filtered filing records as a formatted CSV file"
             >
               <Download className="w-3.5 h-3.5 text-emerald-700" />
               <span>Export to CSV</span>

@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { FilingItem, FilingStage, IPType, PriorityLevel, Subtask } from '../types';
+import React, { useState, useEffect } from 'react';
+import { FilingItem, FilingStage, InternalComment, IPType, Subtask } from '../types';
 import { formatDatePretty, formatDueDateBadge } from '../utils/dateUtils';
 import confetti from 'canvas-confetti';
 import {
-  Calendar,
   CheckCircle,
   Circle,
   Clock,
-  Layers,
   MessageSquare,
   Plus,
   Scale,
+  StickyNote,
   Trash2,
+  User,
   X,
   FileCheck,
 } from 'lucide-react';
@@ -24,6 +24,21 @@ interface FilingDetailModalProps {
   onDeleteFiling: (id: string) => void;
 }
 
+const formatCommentTimestamp = (isoString: string) => {
+  try {
+    const date = new Date(isoString);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return isoString;
+  }
+};
+
 export const FilingDetailModal: React.FC<FilingDetailModalProps> = ({
   isOpen,
   onClose,
@@ -31,10 +46,25 @@ export const FilingDetailModal: React.FC<FilingDetailModalProps> = ({
   onUpdateFiling,
   onDeleteFiling,
 }) => {
-  if (!isOpen || !filing) return null;
-
-  const [formData, setFormData] = useState<FilingItem>({ ...filing });
+  const [formData, setFormData] = useState<FilingItem | null>(filing ? { ...filing } : null);
   const [newSubtaskText, setNewSubtaskText] = useState('');
+  const [quickNoteText, setQuickNoteText] = useState('');
+  const [commentAuthor, setCommentAuthor] = useState(
+    filing?.assignedLawyer || 'Ali Raza, Advocate High Court'
+  );
+
+  useEffect(() => {
+    if (filing) {
+      setFormData({ ...filing });
+      setCommentAuthor(filing.assignedLawyer || 'Ali Raza, Advocate High Court');
+      setQuickNoteText('');
+      setNewSubtaskText('');
+    } else {
+      setFormData(null);
+    }
+  }, [filing]);
+
+  if (!isOpen || !filing || !formData) return null;
 
   const badge = formatDueDateBadge(formData.dueDate, formData.completed);
 
@@ -72,6 +102,36 @@ export const FilingDetailModal: React.FC<FilingDetailModalProps> = ({
     onUpdateFiling(updated);
   };
 
+  const handleAddQuickNote = () => {
+    const trimmed = quickNoteText.trim();
+    if (!trimmed) return;
+
+    const newComment: InternalComment = {
+      id: `cmt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      text: trimmed,
+      author: commentAuthor.trim() || formData.assignedLawyer || 'Attorney (Brandex Law)',
+      timestamp: new Date().toISOString(),
+    };
+
+    const updated: FilingItem = {
+      ...formData,
+      internalComments: [newComment, ...(formData.internalComments || [])],
+    };
+
+    setFormData(updated);
+    onUpdateFiling(updated);
+    setQuickNoteText('');
+  };
+
+  const handleDeleteQuickNote = (commentId: string) => {
+    const updated: FilingItem = {
+      ...formData,
+      internalComments: (formData.internalComments || []).filter((c) => c.id !== commentId),
+    };
+    setFormData(updated);
+    onUpdateFiling(updated);
+  };
+
   const handleToggleCompleted = () => {
     const newCompleted = !formData.completed;
     const updated = {
@@ -88,7 +148,21 @@ export const FilingDetailModal: React.FC<FilingDetailModalProps> = ({
   };
 
   const handleSave = () => {
-    onUpdateFiling(formData);
+    let finalData = formData;
+    if (quickNoteText.trim()) {
+      const pendingComment: InternalComment = {
+        id: `cmt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        text: quickNoteText.trim(),
+        author: commentAuthor.trim() || formData.assignedLawyer || 'Attorney (Brandex Law)',
+        timestamp: new Date().toISOString(),
+      };
+      finalData = {
+        ...formData,
+        internalComments: [pendingComment, ...(formData.internalComments || [])],
+      };
+      setQuickNoteText('');
+    }
+    onUpdateFiling(finalData);
     onClose();
   };
 
@@ -338,6 +412,103 @@ export const FilingDetailModal: React.FC<FilingDetailModalProps> = ({
                   <span>Add Step</span>
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Quick Note — Timestamped Internal Attorney Comments */}
+          <div className="pt-2 border-t border-slate-200">
+            <div className="flex items-center justify-between mb-2">
+              <label className="font-bold text-slate-800 flex items-center gap-1.5">
+                <StickyNote className="w-4 h-4 text-amber-600" />
+                <span>Quick Note (Internal Attorney Comments)</span>
+                <span className="text-[11px] font-mono text-slate-500 font-normal">
+                  ({(formData.internalComments || []).length})
+                </span>
+              </label>
+              <span className="text-[11px] text-slate-400">
+                Internal log · Not shared with clients
+              </span>
+            </div>
+
+            <div className="bg-amber-50/50 p-3 rounded border border-amber-200/80 space-y-3">
+              {/* Quick Note Input Controls */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-600 shrink-0">
+                    <User className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="font-medium">Attorney:</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={commentAuthor}
+                    onChange={(e) => setCommentAuthor(e.target.value)}
+                    placeholder="Attorney name"
+                    className="flex-1 text-xs px-2 py-1 bg-white border border-slate-300 rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  />
+                </div>
+                <div className="flex items-start gap-2">
+                  <textarea
+                    rows={2}
+                    placeholder="Type a Quick Note (e.g., Spoke with IPO Examiner regarding Sec 14 citation; client affidavit confirmed)..."
+                    value={quickNoteText}
+                    onChange={(e) => setQuickNoteText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault();
+                        handleAddQuickNote();
+                      }
+                    }}
+                    className="flex-1 text-xs p-2 bg-white border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-900 leading-relaxed"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddQuickNote}
+                    disabled={!quickNoteText.trim()}
+                    className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold rounded text-xs flex items-center gap-1.5 shrink-0 shadow-2xs transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Note</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Timestamped Comments Log */}
+              {(formData.internalComments || []).length > 0 ? (
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {(formData.internalComments || []).map((comment) => (
+                    <div
+                      key={comment.id}
+                      className="p-2.5 bg-white rounded border border-amber-200/80 shadow-2xs space-y-1"
+                    >
+                      <div className="flex items-center justify-between gap-2 text-[11px]">
+                        <div className="flex items-center gap-2 font-semibold text-slate-800">
+                          <span>{comment.author}</span>
+                          <span aria-hidden="true" className="text-slate-300">·</span>
+                          <span className="inline-flex items-center gap-1 font-mono text-[10px] text-slate-500 font-normal">
+                            <Clock className="w-3 h-3 text-amber-600" />
+                            {formatCommentTimestamp(comment.timestamp)}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteQuickNote(comment.id)}
+                          className="text-slate-300 hover:text-rose-600 p-0.5 rounded transition-colors"
+                          title="Delete internal comment"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+                        {comment.text}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-[11px] text-slate-500 italic py-1">
+                  No internal attorney comments recorded yet. Add a Quick Note above to log a timestamped update.
+                </div>
+              )}
             </div>
           </div>
         </div>
